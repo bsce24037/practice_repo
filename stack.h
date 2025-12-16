@@ -1,153 +1,39 @@
-#ifndef STACK_H
-#define STACK_H
-
-#include"node.h"
-
+#include <iostream>
+#include <string>
+#include "SLinkedList.h"
+using namespace std;
 template <typename T>
-
-class LinkedStack
-{
+class Stack {
 private:
-    Node<T> *head;
-    int size;
-
+    SLinkedList<T> list;
 public:
-    // Default Constructor:
-    LinkedStack()
+    Stack()
     {
-        head = nullptr;
-        size = 0;
-    }
-    // Destructor:
-    ~LinkedStack()
-    {
-        Node<T> *temp;
-        while (head != nullptr)
-        {
-            temp = head;
-            head = head->getNext();
-            delete temp;
-        }
-    }
-    // memeber functions:
-    bool isEmpty()
-    {
-        if (head == nullptr)
-        {
-            return true;
-        }
-        return false;
-    }
-    // PRINT STACK:
-    void printStack()
-    {
-        Node<T> *temp = head;
-
-        while (temp != nullptr)
-        {
-            cout << temp->getData() << " ";
-            temp = temp->getNext();
-        }
     }
 
-    void push(T data)
-    {
-        if (head == nullptr)
-        {
-            Node<T> *p = new Node<T>(data);
-            head = p;
-            size++;
-        }
-        else
-        {
-
-            Node<T> *p = new Node<T>(data);
-
-            p->setNext(head);
-            head = p;
-            size++;
-        }
+    void push(T value) {
+        list.prepend(value);
     }
 
-    T pop()
-    {
-        try
-        {
-            if (isEmpty() == true)
-            {
-                throw out_of_range("linked list is Empty");
-            }
-            else
-            {
-                Node<T> *po = head;
-
-                T p = head->getData();
-                head = head->getNext();
-
-                delete po;
-
-                if (size == 0)
-                {
-                    return T();
-                }
-                size--;
-                return p;
-            }
-        }
-        catch (const exception &e)
-        {
-            cout << e.what() << endl;
+    T pop() {
+        if (list.isEmpty()) {
+            cout << "Stack empty";
             return T();
         }
-    }
-    T seek()
-    {
-        try
-        {
-            if (isEmpty() == true)
-            {
-                throw out_of_range("linked list is Empty");
-            }
-            else
-            {
-                return head->getData();
-            }
-        }
-        catch (const exception &e)
-        {
-            cout << e.what() << endl;
-            return T();
-        }
-    }
-    int getSize()
-    {
-        return size;
+        T value = list.getHead()->data;
+        list.deleteFromStart();
+        return value;
     }
 
-    T search(T value)
-    {
-        Node<T>* temp = head;
-        while(temp!=nullptr)
-        {
-            if(temp->data==value)
-            {
-                return temp;
-            }
-            else
-            {
-                temp = temp->getNext();
-            }
+    T top() {
+        if (list.isEmpty()) {
+            cout << "Stack empty\n";
+            return T();
         }
-        return nullptr;
+        return list.getHead()->data;
     }
-    void clear()
-    {
-        while (!isEmpty())
-        {
-            pop();
-        }
-        size = 0;
+
+    bool isEmpty() {
+        return list.isEmpty();
     }
 };
-
-#endif

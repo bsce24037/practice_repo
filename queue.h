@@ -1,102 +1,131 @@
-#ifndef QUEUE_H
-#define QUEUE_H
-
-#include "node.h"
-
-template <typename T>
-class LinkedQueue
-{
+#include <iostream>
+#include <string>
+#include "SLinkedList.h"
+using namespace std;
+template<typename T>
+class Queue {
 private:
-    Node<T> *front;
-    Node<T> *rear;
-    int size;
+    SLinkedList<T> list;
 
 public:
-    LinkedQueue()
-    {
-        front = rear = nullptr;
-        size = 0;
+    Queue() {}
+
+    void enqueue(T value) {
+        list.append(value);
     }
 
-    ~LinkedQueue()
-    {
-        clear();
-    }
-
-    bool isEmpty() const
-    {
-        return front == nullptr;
-    }
-
-    void enqueue(const T &data)
-    {
-        Node<T> *p = new Node<T>(data);
-
-        if (isEmpty())
-        {
-            front = rear = p;
+    T dequeue() {
+        if (list.isEmpty()) {
+            cout << "Queue empty\n";
+            return T();
         }
-        else
-        {
-            rear->setNext(p);
-            rear = p;
-        }
-        size++;
-    }
-
-    T dequeue()
-    {
-        if (isEmpty())
-        {
-            cout << "Queue underflow!" << endl;
-            return front->getData(); 
-        }
-
-        Node<T> *temp = front;
-        T value = front->getData();
-
-        front = front->getNext();
-        delete temp;
-        size--;
-
-        if (front == nullptr)
-            rear = nullptr;
-
+        T value = list.getHead()->data;
+        list.deleteFromStart();
         return value;
     }
 
-    T peek() const
-    {
-        if (isEmpty())
-        {
-            cout << "Queue empty!" << endl;
-            return front->getData(); 
+    T front() {
+        if (list.isEmpty()) {
+            cout << "Queue empty\n";
+            return T();
         }
-        return front->getData();
+        return list.getHead()->data;
     }
 
-    int getSize() const
-    {
-        return size;
-    }
-
-    void printQueue() const
-    {
-        Node<T> *temp = front;
-        while (temp != nullptr)
-        {
-            cout << temp->getData() << " ";
-            temp = temp->getNext();
-        }
-    }
-
-    void clear()
-    {
-        while (!isEmpty())
-        {
-            dequeue();
-        }
+    bool isEmpty() {
+        return list.isEmpty();
     }
 };
 
-#endif
+
+template <typename T>
+class CircularQueue {
+private:
+    T* array;
+    int front;
+    int rear;
+    int size;
+    int capacity;
+
+public:
+    CircularQueue(int cap = 10) {
+        capacity = cap;
+        array = new T[capacity];
+        front = 0;
+        rear = 0;
+        size = 0;
+    }
+
+    ~CircularQueue() {
+        delete[] array;
+    }
+
+    bool isEmpty() {
+        return size == 0;
+    }
+
+    bool isFull() {
+        return size == capacity;
+    }
+
+    void enqueue(T value) {
+        // Inline resizing if full
+        if (isFull()) {
+            int newCapacity = capacity * 2;
+            T* newArr = new T[newCapacity];
+            for (int i = 0; i < size; i++) {
+                newArr[i] = array[(front + i) % capacity];
+            }
+            delete[] array;
+            array = newArr;
+            capacity = newCapacity;
+            front = 0;
+            rear = size;
+        }
+
+        array[rear] = value;
+        rear = (rear + 1) % capacity;
+        size++;
+    }
+
+    T dequeue() {
+        if (isEmpty()) {
+            cout << "Queue empty\n";
+            return T();
+        }
+        T value = array[front];
+        front = (front + 1) % capacity;
+        size--;
+        return value;
+    }
+
+    T getFront() {
+        if (isEmpty()) {
+            cout << "Queue empty\n";
+            return T();
+        }
+        return array[front];
+    }
+
+    int getSize() {
+        return size;
+    }
+
+    void clear() {
+        front = 0;
+        rear = 0;
+        size = 0;
+    }
+
+    void printQueue() {
+        if (isEmpty()) {
+            cout << "Queue empty\n";
+            return;
+        }
+        cout << "Queue: ";
+        for (int i = 0; i < size; i++) {
+            cout << array[(front + i) % capacity] << " ";
+        }
+        cout << endl;
+    }
+};
